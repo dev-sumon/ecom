@@ -17,8 +17,8 @@ use App\Http\Controllers\Admin\AdminController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
-});
+    return view('frondend.layout.master');
+})->name('welcome');
 
 Auth::routes();
 
