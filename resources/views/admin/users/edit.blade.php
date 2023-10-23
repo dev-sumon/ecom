@@ -1,12 +1,12 @@
 @extends('admin.layout.master')
-@section('title', 'User Create')
+@section('title', 'User Edit')
 @section('content')
     <div class="">
         <div class="row">
             <div class="col-md-12 col-sm-12">
                 <div class="x_panel">
                     <div class="x_title">
-                        <h2>Create User</h2>
+                        <h2>Edit User</h2>
                         <ul class="nav navbar-right panel_toolbox">
                             <a class="btn btn-primary btn-sm" href="{{ route('user.index') }}">{{ __('Back') }}</a>
                             <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
@@ -15,13 +15,13 @@
                         <div class="clearfix"></div>
                     </div>
                     <div class="x_content">
-                        <form action="{{ route('user.store') }}" method="POST" enctype="multipart/form-data" novalidate>
+                        <form action="{{route('user.update',$user->id)}}" method="POST" enctype="multipart/form-data" novalidate>
                             @csrf
                             <div class="field item form-group">
                                 <label class="col-form-label col-md-3 col-sm-3  label-align">Name<span
                                         class="required">*</span></label>
                                 <div class="col-md-6 col-sm-6">
-                                    <input class="form-control" data-validate-length-range="6" data-validate-words="2" value="{{old('name')}}"
+                                    <input class="form-control" data-validate-length-range="6" data-validate-words="2" value="{{$user->name}}"
                                         name="name" required="required" />
                                 </div>
                             </div>
@@ -43,8 +43,8 @@
                                 <div class="col-md-6 col-sm-6 ">
                                     <select class="form-control" name="role">
                                         <option selected hidden>Select Role</option>
-                                        <option value="admin" {{(old('role') == 'admin')? 'selected' : '' }}>Admin</option>
-                                        <option value="user" {{(old('role') == 'user')? 'selected' : '' }}>User</option>
+                                        <option value="admin" {{(($user->role) == 'admin') ? 'selected' : '' }}>Admin</option>
+                                        <option value="user" {{(($user->role) == 'user') ? 'selected' : '' }}>User</option>
                                     </select>
                                 </div>
                             </div>
@@ -52,7 +52,7 @@
                                 <label class="col-form-label col-md-3 col-sm-3  label-align">Email<span
                                         class="required">*</span></label>
                                 <div class="col-md-6 col-sm-6">
-                                    <input class="form-control" name="email" value="{{old('email')}}" class='email' required="required"
+                                    <input class="form-control" name="email" value="{{$user->email}}" class='email' required="required"
                                         type="email" />
                                 </div>
                             </div>
@@ -80,22 +80,54 @@
                                         data-validate-linked='password' required='required' />
                                 </div>
                             </div>
-                            <div class="field item form-group">
-                                <label class="col-form-label col-md-3 col-sm-3  label-align">Billing Address-1</label>
-                                <div class="col-md-6 col-sm-6 input-group" role="group">
-                                    <input type="text" name='billing_address[1][billing]'  value="{{old('billing_address*1*billing')}}" class="form-control">
-                                    <span class="btn btn-info m-0 add-billing">+</span>
+                            @if(!empty(json_decode($user->billing_address,true)))
+                                @foreach( json_decode($user->billing_address) as $key=>$address)
+                                    <div class="field item form-group" id="remove_b-{{$key}}">
+                                        <label class="col-form-label col-md-3 col-sm-3  label-align">Billing Address-{{$key}}</label>
+                                        <div class="col-md-6 col-sm-6 input-group" role="group">
+                                            <input type="text" name='billing_address[{{$key}}][billing]'  value="{{$address->billing}}" class="form-control">
+                                        @if($key == 1)
+                                            <span class="btn btn-info m-0 add-billing" data-count="{{count(json_decode($user->billing_address, true))}}">+</span>
+                                        @else
+                                            <span class="btn btn-danger m-0" onclick="removed_b({{$key}})" >x</span>
+                                        @endif
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @else
+                                <div class="field item form-group">
+                                    <label class="col-form-label col-md-3 col-sm-3  label-align">Billing Address-1</label>
+                                    <div class="col-md-6 col-sm-6 input-group" role="group">
+                                        <input type="text" value="" name='billing_address[1][billing]' class="form-control">
+                                        <span class="btn btn-info m-0 add-billing" data-count="1">+</span>
+                                    </div>
                                 </div>
-                            </div>
+                            @endif
                             <div class="billing"></div>
 
-                            <div class="field item form-group">
-                                <label class="col-form-label col-md-3 col-sm-3  label-align">Shipping Address-1</label>
-                                <div class="col-md-6 col-sm-6 input-group" role="group">
-                                    <input type="text" value="{{old('shipping_address*1*shipping')}}" name='shipping_address[1][shipping]' class="form-control">
-                                    <span class="btn btn-info m-0 add-shipping">+</span>
+                            @if(!empty(json_decode($user->shipping_address,true)))
+                                @foreach( json_decode($user->shipping_address) as $key=>$address)
+                                    <div class="field item form-group" id="remove-{{$key}}">
+                                        <label class="col-form-label col-md-3 col-sm-3  label-align">Shipping Address-{{$key}}</label>
+                                        <div class="col-md-6 col-sm-6 input-group" role="group">
+                                            <input type="text" value="{{$address->shipping}}" name='shipping_address[{{$key}}][shipping]' class="form-control">
+                                            @if($key == 1)
+                                                <span class="btn btn-info m-0 add-shipping" data-count="{{count(json_decode($user->shipping_address, true))}}">+</span>
+                                            @else
+                                                <span class="btn btn-danger m-0" onclick="removed({{$key}})" >x</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @else
+                                <div class="field item form-group">
+                                    <label class="col-form-label col-md-3 col-sm-3  label-align">Shipping Address-1</label>
+                                    <div class="col-md-6 col-sm-6 input-group" role="group">
+                                        <input type="text" value="" name='shipping_address[1][shipping]' class="form-control">
+                                        <span class="btn btn-info m-0 add-shipping">+</span>
+                                    </div>
                                 </div>
-                            </div>
+                            @endif
                             <div class="shipping"></div>
                             <div class="ln_solid">
                                 <div class="form-group">
@@ -115,10 +147,11 @@
 @push('js')
     <script>
         $(document).ready(function(){
-            let count = 1;
             $('.add-shipping').on('click', function(){
+                let count = $(this).data('count');
                 count++;
-                console.log('hi');
+                $(this).data('count',count);
+
                 let result =
                         `
                         <div class="field item form-group" id="remove-${count}">
@@ -137,12 +170,12 @@
         function removed(count){
                 $('#remove-'+count).remove();
         }
-
-
         $(document).ready(function(){
-            let count = 1;
             $('.add-billing').on('click', function(){
+                let count = $(this).data('count');
                 count++;
+                $(this).data('count',count);
+
                 let result =
                         `
                             <div class="field item form-group" id="remove_b-${count}">

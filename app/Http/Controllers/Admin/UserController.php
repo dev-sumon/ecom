@@ -25,6 +25,7 @@ class UserController extends Controller
         //     'shipping_address' => $req['shipping_address'],
         //     'password' => Hash::make($req['password']),
         // ]);
+
         $user = new User();
 
         if($req->hasFile('image')){
@@ -38,15 +39,82 @@ class UserController extends Controller
             $user->cover_image = $path;
         }
 
+        $filteredBilling = array_filter($req->billing_address, function ($entry) {
+            return isset($entry['billing']) && !is_null($entry['billing']);
+        });
+        $filteredShipping = array_filter($req->shipping_address, function ($entry) {
+            return isset($entry['shipping']) && !is_null($entry['shipping']);
+        });
 
 
         $user->name = $req->name;
         $user->email = $req->email;
         $user->role = $req->role;
-        $user->billing_address = $req->billing_address;
-        $user->shipping_address = $req->shipping_address;
+        if($filteredBilling){
+            $user->billing_address = json_encode($req->billing_address);
+        }
+        if($filteredShipping){
+            $user->shipping_address = json_encode($req->shipping_address);
+        }
         $user->password = Hash::make($req->password);
         $user->save();
+        return redirect()->route('user.index');
+
+    }
+    function view($id){
+        $s['user'] = User::findOrFail($id);
+        return view('admin.users.view',$s);
+    }
+    function edit($id){
+        $s['user'] = User::findOrFail($id);
+        return view('admin.users.edit',$s);
+    }
+
+    function update(Request $req, $id){
+        // User::create([
+        //     'name' => $req['name'],
+        //     'email' => $req['email'],
+        //     'role' => $req['role'],
+        //     'billing_address' => $req['billing_address'],
+        //     'shipping_address' => $req['shipping_address'],
+        //     'password' => Hash::make($req['password']),
+        // ]);
+
+        $filteredBilling = array_filter($req->billing_address, function ($entry) {
+            return isset($entry['billing']) && !is_null($entry['billing']);
+        });
+        $filteredShipping = array_filter($req->shipping_address, function ($entry) {
+            return isset($entry['shipping']) && !is_null($entry['shipping']);
+        });
+
+        $user = User::findOrFail($id);
+
+        if($req->hasFile('image')){
+            $image = $req->file('image');
+            $path = $image->store('user','public');
+            $this->fileDelete($user->image);
+            $user->image = $path;
+        }
+        if($req->hasFile('cover_image')){
+            $image = $req->file('cover_image');
+            $path = $image->store('user/cover_image','public');
+            $this->fileDelete($user->cover_image);
+            $user->cover_image = $path;
+        }
+
+
+
+        $user->name = $req->name;
+        $user->email = $req->email;
+        $user->role = $req->role;
+        if($filteredBilling){
+            $user->billing_address = json_encode($req->billing_address);
+        }
+        if($filteredShipping){
+            $user->shipping_address = json_encode($req->shipping_address);
+        }
+        $user->password = Hash::make($req->password);
+        $user->update();
         return redirect()->route('user.index');
 
     }
@@ -54,5 +122,12 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $this->changeStatus($user);
         return redirect()->back();
+    }
+    function delete($id){
+        $user = User::findOrFail($id);
+        $this->fileDelete($user->image);
+        $this->fileDelete($user->cover_image);
+        $user->delete();
+        return redirect()->route('user.index');
     }
 }
