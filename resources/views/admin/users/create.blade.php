@@ -24,18 +24,21 @@
                                     <input class="form-control" data-validate-length-range="6" data-validate-words="2" value="{{old('name')}}"
                                         name="name" required="required" />
                                 </div>
+                                @include('message.error',['field'=>'name'])
                             </div>
                             <div class="field item form-group">
                                 <label class="col-form-label col-md-3 col-sm-3  label-align">Profile Photo</label>
                                 <div class="col-md-6 col-sm-6">
-                                    <input class="form-control" class='optional' name="image" type="file" />
+                                    <input class="form-control" accept="image/*" class='optional' name="image" type="file" />
                                 </div>
+                                @include('message.error',['field'=>'image'])
                             </div>
                             <div class="field item form-group">
                                 <label class="col-form-label col-md-3 col-sm-3  label-align">Cover Photo</label>
                                 <div class="col-md-6 col-sm-6">
                                     <input class="form-control" class='optional' name="cover_image" type="file" />
                                 </div>
+                                @include('message.error',['field'=>'cover_image'])
                             </div>
                             <div class="field item form-group">
                                 <label class="control-label col-md-3 col-sm-3 label-align">Role<span
@@ -47,6 +50,7 @@
                                         <option value="user" {{(old('role') == 'user')? 'selected' : '' }}>User</option>
                                     </select>
                                 </div>
+                                @include('message.error',['field'=>'role'])
                             </div>
                             <div class="field item form-group">
                                 <label class="col-form-label col-md-3 col-sm-3  label-align">Email<span
@@ -55,6 +59,7 @@
                                     <input class="form-control" name="email" value="{{old('email')}}" class='email' required="required"
                                         type="email" />
                                 </div>
+                                @include('message.error',['field'=>'email'])
                             </div>
                             <div class="field item form-group">
                                 <label class="col-form-label col-md-3 col-sm-3  label-align">Password<span
@@ -70,6 +75,7 @@
                                         <i id="eye" class="fa fa-eye"></i>
                                     </span>
                                 </div>
+                                @include('message.error',['field'=>'password'])
                             </div>
 
                             <div class="field item form-group">
@@ -79,6 +85,7 @@
                                     <input class="form-control" type="password" name="confirm_password"
                                         data-validate-linked='password' required='required' />
                                 </div>
+
                             </div>
                             <div class="field item form-group">
                                 <label class="col-form-label col-md-3 col-sm-3  label-align">Billing Address-1</label>
@@ -86,15 +93,17 @@
                                     <input type="text" name='billing_address[1][billing]'  value="{{old('billing_address*1*billing')}}" class="form-control">
                                     <span class="btn btn-info m-0 add-billing">+</span>
                                 </div>
+                                @include('message.error',['field'=>'billing_address'])
                             </div>
                             <div class="billing"></div>
 
                             <div class="field item form-group">
                                 <label class="col-form-label col-md-3 col-sm-3  label-align">Shipping Address-1</label>
                                 <div class="col-md-6 col-sm-6 input-group" role="group">
-                                    <input type="text" value="{{old('shipping_address*1*shipping')}}" name='shipping_address[1][shipping]' class="form-control">
+                                    <input type="text" value="{{old('shipping_address.*.shipping')}}" name='shipping_address[1][shipping]' class="form-control">
                                     <span class="btn btn-info m-0 add-shipping">+</span>
                                 </div>
+                                @include('message.error',['field'=>'shipping_address'])
                             </div>
                             <div class="shipping"></div>
                             <div class="ln_solid">

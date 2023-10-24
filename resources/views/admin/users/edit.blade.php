@@ -16,6 +16,7 @@
                     </div>
                     <div class="x_content">
                         <form action="{{route('user.update',$user->id)}}" method="POST" enctype="multipart/form-data" novalidate>
+                            @method('PUT')
                             @csrf
                             <div class="field item form-group">
                                 <label class="col-form-label col-md-3 col-sm-3  label-align">Name<span
@@ -24,18 +25,23 @@
                                     <input class="form-control" data-validate-length-range="6" data-validate-words="2" value="{{$user->name}}"
                                         name="name" required="required" />
                                 </div>
+                                @include('message.error',['field'=>'name'])
                             </div>
                             <div class="field item form-group">
                                 <label class="col-form-label col-md-3 col-sm-3  label-align">Profile Photo</label>
                                 <div class="col-md-6 col-sm-6">
                                     <input class="form-control" class='optional' name="image" type="file" />
                                 </div>
+                                @include('message.error',['field'=>'image'])
+
                             </div>
                             <div class="field item form-group">
                                 <label class="col-form-label col-md-3 col-sm-3  label-align">Cover Photo</label>
                                 <div class="col-md-6 col-sm-6">
                                     <input class="form-control" class='optional' name="cover_image" type="file" />
                                 </div>
+                                @include('message.error',['field'=>'cover_image'])
+
                             </div>
                             <div class="field item form-group">
                                 <label class="control-label col-md-3 col-sm-3 label-align">Role<span
@@ -47,6 +53,8 @@
                                         <option value="user" {{(($user->role) == 'user') ? 'selected' : '' }}>User</option>
                                     </select>
                                 </div>
+                                @include('message.error',['field'=>'role'])
+
                             </div>
                             <div class="field item form-group">
                                 <label class="col-form-label col-md-3 col-sm-3  label-align">Email<span
@@ -55,6 +63,8 @@
                                     <input class="form-control" name="email" value="{{$user->email}}" class='email' required="required"
                                         type="email" />
                                 </div>
+                                @include('message.error',['field'=>'email'])
+
                             </div>
                             <div class="field item form-group">
                                 <label class="col-form-label col-md-3 col-sm-3  label-align">Password<span
@@ -70,6 +80,8 @@
                                         <i id="eye" class="fa fa-eye"></i>
                                     </span>
                                 </div>
+                                @include('message.error',['field'=>'password'])
+                                
                             </div>
 
                             <div class="field item form-group">
@@ -103,6 +115,7 @@
                                     </div>
                                 </div>
                             @endif
+                            @include('message.error',['field'=>'billing_address'])
                             <div class="billing"></div>
 
                             @if(!empty(json_decode($user->shipping_address,true)))
@@ -128,6 +141,8 @@
                                     </div>
                                 </div>
                             @endif
+                            @include('message.error',['field'=>'billing_address'])
+
                             <div class="shipping"></div>
                             <div class="ln_solid">
                                 <div class="form-group">

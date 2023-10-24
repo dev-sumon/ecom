@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\UserRequest;
 
 class UserController extends Controller
 {
@@ -16,7 +17,7 @@ class UserController extends Controller
     function create(){
         return view('admin.users.create');
     }
-    function store(Request $req){
+    function store(UserRequest $req){
         // User::create([
         //     'name' => $req['name'],
         //     'email' => $req['email'],
@@ -58,7 +59,8 @@ class UserController extends Controller
         }
         $user->password = Hash::make($req->password);
         $user->save();
-        return redirect()->route('user.index');
+        // return redirect()->route('user.index')->with('success','User Created Successfully');
+        return redirect()->route('user.index')->withStatus(__('User Created Successfully'));
 
     }
     function view($id){
@@ -70,7 +72,7 @@ class UserController extends Controller
         return view('admin.users.edit',$s);
     }
 
-    function update(Request $req, $id){
+    function update(UserRequest $req, $id){
         // User::create([
         //     'name' => $req['name'],
         //     'email' => $req['email'],
@@ -115,19 +117,19 @@ class UserController extends Controller
         }
         $user->password = Hash::make($req->password);
         $user->update();
-        return redirect()->route('user.index');
+        return redirect()->route('user.index')->withStatus(__('User Updated Successfully'));;
 
     }
     function status($id){
         $user = User::findOrFail($id);
         $this->changeStatus($user);
-        return redirect()->back();
+        return redirect()->back()->withStatus(__('User Status Change Successfully'));;
     }
     function delete($id){
         $user = User::findOrFail($id);
         $this->fileDelete($user->image);
         $this->fileDelete($user->cover_image);
         $user->delete();
-        return redirect()->route('user.index');
+        return redirect()->route('user.index')->withStatus(__('User Deleted Successfully'));;
     }
 }
