@@ -33,6 +33,13 @@
                 <li><a href="index3.html">Dashboard3</a></li>
               </ul>
             </li>
+            <li><a><i class="fa fa-home"></i> Product <span class="fa fa-chevron-down"></span></a>
+              <ul class="nav child_menu">
+                <li><a href="index.html">Product</a></li>
+                <li><a href="{{route('product.category.index')}}">Category</a></li>
+                <li><a href="index3.html">Sub Category</a></li>
+              </ul>
+            </li>
             <li><a><i class="fa fa-sitemap"></i> Multilevel Menu <span class="fa fa-chevron-down"></span></a>
               <ul class="nav child_menu">
                   <li><a href="#level1_1">Level One</a>
