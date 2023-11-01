@@ -1,147 +1,46 @@
 @extends('admin.layout.master')
-@section('title', 'User Edit')
+@section('title', 'Category Edit')
 @section('content')
     <div class="">
         <div class="row">
             <div class="col-md-12 col-sm-12">
                 <div class="x_panel">
                     <div class="x_title">
-                        <h2>Edit User</h2>
+                        <h2>Edit Category</h2>
                         <ul class="nav navbar-right panel_toolbox">
-                            <a class="btn btn-primary btn-sm" href="{{ route('user.index') }}">{{ __('Back') }}</a>
+                            <a class="btn btn-primary btn-sm" href="{{ route('product.category.index') }}">{{ __('Back') }}</a>
                             <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                             </li>
                         </ul>
                         <div class="clearfix"></div>
                     </div>
                     <div class="x_content">
-                        <form action="{{route('user.update',$user->id)}}" method="POST" enctype="multipart/form-data" novalidate>
+                        <form action="{{route('product.category.update',$category->id)}}" method="POST" enctype="multipart/form-data" novalidate>
                             @method('PUT')
                             @csrf
                             <div class="field item form-group">
                                 <label class="col-form-label col-md-3 col-sm-3  label-align">Name<span
                                         class="required">*</span></label>
                                 <div class="col-md-6 col-sm-6">
-                                    <input class="form-control" data-validate-length-range="6" data-validate-words="2" value="{{$user->name}}"
+                                    <input class="form-control" data-validate-length-range="6" data-validate-words="2" value="{{$category->name}}"
                                         name="name" required="required" />
                                 </div>
                                 @include('message.error',['field'=>'name'])
                             </div>
                             <div class="field item form-group">
-                                <label class="col-form-label col-md-3 col-sm-3  label-align">Profile Photo</label>
+                                <label class="col-form-label col-md-3 col-sm-3  label-align">Image</label>
                                 <div class="col-md-6 col-sm-6">
                                     <input class="form-control" class='optional' name="image" type="file" />
                                 </div>
                                 @include('message.error',['field'=>'image'])
-
                             </div>
-                            <div class="field item form-group">
-                                <label class="col-form-label col-md-3 col-sm-3  label-align">Cover Photo</label>
-                                <div class="col-md-6 col-sm-6">
-                                    <input class="form-control" class='optional' name="cover_image" type="file" />
-                                </div>
-                                @include('message.error',['field'=>'cover_image'])
-
-                            </div>
-                            <div class="field item form-group">
-                                <label class="control-label col-md-3 col-sm-3 label-align">Role<span
-                                        class="required">*</span></label>
-                                <div class="col-md-6 col-sm-6 ">
-                                    <select class="form-control" name="role">
-                                        <option selected hidden>Select Role</option>
-                                        <option value="admin" {{(($user->role) == 'admin') ? 'selected' : '' }}>Admin</option>
-                                        <option value="user" {{(($user->role) == 'user') ? 'selected' : '' }}>User</option>
-                                    </select>
-                                </div>
-                                @include('message.error',['field'=>'role'])
-
-                            </div>
-                            <div class="field item form-group">
-                                <label class="col-form-label col-md-3 col-sm-3  label-align">Email<span
-                                        class="required">*</span></label>
-                                <div class="col-md-6 col-sm-6">
-                                    <input class="form-control" name="email" value="{{$user->email}}" class='email' required="required"
-                                        type="email" />
-                                </div>
-                                @include('message.error',['field'=>'email'])
-
-                            </div>
-                            <div class="field item form-group">
-                                <label class="col-form-label col-md-3 col-sm-3  label-align">Password<span
-                                        class="required">*</span></label>
-                                <div class="col-md-6 col-sm-6">
-                                    <input class="form-control" type="password" id="password1" name="password"
-                                        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}"
-                                        title="Minimum 8 Characters Including An Upper And Lower Case Letter, A Number And A Unique Character"
-                                        required />
-
-                                    <span style="position: absolute;right:15px;top:7px;" onclick="hideshow()">
-                                        <i id="slash" class="fa fa-eye-slash"></i>
-                                        <i id="eye" class="fa fa-eye"></i>
-                                    </span>
-                                </div>
-                                @include('message.error',['field'=>'password'])
-                                
+                            <div class="col-md-3 col-sm-3"></div>
+                            <div class="col-md-6 col-sm-6 mb-4">
+                                <img src="{{asset('storage/'.$category->image)}}" alt="Category Image" height="100px" width="100px">
                             </div>
 
-                            <div class="field item form-group">
-                                <label class="col-form-label col-md-3 col-sm-3  label-align">Confirm password<span
-                                        class="required">*</span></label>
-                                <div class="col-md-6 col-sm-6">
-                                    <input class="form-control" type="password" name="confirm_password"
-                                        data-validate-linked='password' required='required' />
-                                </div>
-                            </div>
-                            @if(!empty(json_decode($user->billing_address,true)))
-                                @foreach( json_decode($user->billing_address) as $key=>$address)
-                                    <div class="field item form-group" id="remove_b-{{$key}}">
-                                        <label class="col-form-label col-md-3 col-sm-3  label-align">Billing Address-{{$key}}</label>
-                                        <div class="col-md-6 col-sm-6 input-group" role="group">
-                                            <input type="text" name='billing_address[{{$key}}][billing]'  value="{{$address->billing}}" class="form-control">
-                                        @if($key == 1)
-                                            <span class="btn btn-info m-0 add-billing" data-count="{{count(json_decode($user->billing_address, true))}}">+</span>
-                                        @else
-                                            <span class="btn btn-danger m-0" onclick="removed_b({{$key}})" >x</span>
-                                        @endif
-                                        </div>
-                                    </div>
-                                @endforeach
-                            @else
-                                <div class="field item form-group">
-                                    <label class="col-form-label col-md-3 col-sm-3  label-align">Billing Address-1</label>
-                                    <div class="col-md-6 col-sm-6 input-group" role="group">
-                                        <input type="text" value="" name='billing_address[1][billing]' class="form-control">
-                                        <span class="btn btn-info m-0 add-billing" data-count="1">+</span>
-                                    </div>
-                                </div>
-                            @endif
-                            @include('message.error',['field'=>'billing_address'])
-                            <div class="billing"></div>
 
-                            @if(!empty(json_decode($user->shipping_address,true)))
-                                @foreach( json_decode($user->shipping_address) as $key=>$address)
-                                    <div class="field item form-group" id="remove-{{$key}}">
-                                        <label class="col-form-label col-md-3 col-sm-3  label-align">Shipping Address-{{$key}}</label>
-                                        <div class="col-md-6 col-sm-6 input-group" role="group">
-                                            <input type="text" value="{{$address->shipping}}" name='shipping_address[{{$key}}][shipping]' class="form-control">
-                                            @if($key == 1)
-                                                <span class="btn btn-info m-0 add-shipping" data-count="{{count(json_decode($user->shipping_address, true))}}">+</span>
-                                            @else
-                                                <span class="btn btn-danger m-0" onclick="removed({{$key}})" >x</span>
-                                            @endif
-                                        </div>
-                                    </div>
-                                @endforeach
-                            @else
-                                <div class="field item form-group">
-                                    <label class="col-form-label col-md-3 col-sm-3  label-align">Shipping Address-1</label>
-                                    <div class="col-md-6 col-sm-6 input-group" role="group">
-                                        <input type="text" value="" name='shipping_address[1][shipping]' class="form-control">
-                                        <span class="btn btn-info m-0 add-shipping">+</span>
-                                    </div>
-                                </div>
-                            @endif
-                            @include('message.error',['field'=>'billing_address'])
+
 
                             <div class="shipping"></div>
                             <div class="ln_solid">
@@ -159,54 +58,4 @@
         </div>
     </div>
 @endsection
-@push('js')
-    <script>
-        $(document).ready(function(){
-            $('.add-shipping').on('click', function(){
-                let count = $(this).data('count');
-                count++;
-                $(this).data('count',count);
 
-                let result =
-                        `
-                        <div class="field item form-group" id="remove-${count}">
-                            <label class="col-form-label col-md-3 col-sm-3  label-align">Shipping Address-${count}</label>
-                            <div class="col-md-6 col-sm-6 input-group" role="group">
-                                <input type="text" name='shipping_address[${count}][shipping]' class="form-control">
-                                <span class="btn btn-danger m-0" onclick="removed(${count})" >x</span>
-                            </div>
-
-                        </div>
-                        `;
-                $('.shipping').append(result);
-
-            });
-        });
-        function removed(count){
-                $('#remove-'+count).remove();
-        }
-        $(document).ready(function(){
-            $('.add-billing').on('click', function(){
-                let count = $(this).data('count');
-                count++;
-                $(this).data('count',count);
-
-                let result =
-                        `
-                            <div class="field item form-group" id="remove_b-${count}">
-                                <label class="col-form-label col-md-3 col-sm-3  label-align">Billing Address-${count}</label>
-                                <div class="col-md-6 col-sm-6 input-group" role="group">
-                                    <input type="text" name='billing_address[${count}][billing]' class="form-control">
-                                    <span class="btn btn-danger m-0" onclick="removed_b(${count})" >x</span>
-                                </div>
-                            </div>
-                        `;
-                $('.billing').append(result);
-
-            });
-        });
-        function removed_b(count){
-                $('#remove_b-'+count).remove();
-        }
-    </script>
-@endpush
