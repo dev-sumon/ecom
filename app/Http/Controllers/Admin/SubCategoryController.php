@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SubCatRequest;
 use App\Models\Category;
 use App\Models\SubCategory;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -40,7 +41,8 @@ class SubCategoryController extends Controller
         $s['categories'] = Category::where('status',1)->latest()->get();
         return view('admin.product.sub_category.edit',$s);
     }
-    function update(SubCatRequest $req, $id){
+    function update(SubCatRequest $req, $id): RedirectResponse
+    {
         $sub_cat = SubCategory::findOrFail($id);
         $sub_cat->name = $req->name;
         $sub_cat->cat_id = $req->cat_id;
@@ -49,14 +51,21 @@ class SubCategoryController extends Controller
         $sub_cat->update();
         return redirect()->route('product.sub_category.index')->withStatus(__('Sub Category Updated Successfully'));
     }
-    function status($id){
+    function status($id): RedirectResponse
+    {
         $sub_cat = SubCategory::findOrFail($id);
         $this->changeStatus($sub_cat);
         return redirect()->back()->withStatus(__('Sub Category Status Change Successfully'));;
     }
-    function delete($id){
+    function delete($id): RedirectResponse
+    {
         $sub_cat = SubCategory::findOrFail($id);
         $sub_cat->delete();
         return redirect()->route('product.sub_category.index')->withStatus(__('Sub Category Deleted Successfully'));
+    }
+    function view($id): JsonResponse
+    {
+        $s['sub_category'] = SubCategory::with(['category','createdBy','updatedBy'])->where('id',$id)->first();
+        return response()->json($s);
     }
 }

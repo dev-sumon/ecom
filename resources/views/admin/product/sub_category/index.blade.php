@@ -62,8 +62,8 @@
                                                 <td>{{date('d-m-y', strtotime($sub_category->created_at))}}</td>
                                                 <td>
                                                     <div class="btn-group" role="group">
-                                                        <a href="{{ route('product.sub_category.view', $sub_category->id) }}"
-                                                            class="btn btn-outline-primary btn-sm">View</a>
+                                                        <a href="javascript:void(0)"
+                                                            class="btn btn-outline-primary btn-sm btn_view"  data-id="{{$sub_category->id}}">View</a>
                                                         <a href="{{ route('product.sub_category.edit', $sub_category->id) }}"
                                                             class="btn btn-outline-info btn-sm">Edit</a>
                                                         <a href="{{ route('product.sub_category.delete', $sub_category->id) }}" onclick="alert('Are you sure?')"
@@ -82,6 +82,28 @@
             </div>
         </div>
     </div>
+
+
+  
+  {{-- View Modal  --}}
+  <div class="modal fade bd-example-modal-lg" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">View Sub Category</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 @endsection
 @push('js_link')
     <!-- Datatables -->
@@ -100,4 +122,69 @@
     <script src="{{ asset('admin/vendors/jszip/dist/jszip.min.js') }}"></script>
     <script src="{{ asset('admin/vendors/pdfmake/build/pdfmake.min.js') }}"></script>
     <script src="{{ asset('admin/vendors/pdfmake/build/vfs_fonts.js') }}"></script>
+@endpush
+@push('js')
+<script>
+    $(document).ready(function() {
+        $('.btn_view').on('click', function() {
+            var id = $(this).data('id');
+            var url = "{{route('product.sub_category.view',['sub_cat_id'])}}"
+            let _url = url.replace('sub_cat_id', id);
+            $.ajax({
+                url: _url,
+                method: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    var status = ((data.sub_category.status == 1) ? "Active" : "Deactive");
+                    var statusClass = ((data.sub_category.status == 1) ? "badge-success" : "badge-warning");
+                    var updated_by = (data.sub_category.updated_by ? data.sub_category.updated_by.name : "N/A");
+                    var view_data = `
+                                    <table class="table">
+                                        <tr>
+                                            <th>Name</th>
+                                            <td>:</td>
+                                            <td>${data.sub_category.name}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Category</th>
+                                            <td>:</td>
+                                            <td>${data.sub_category.category.name}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Status</th>
+                                            <td>:</td>
+                                            <td><span class="badge ${statusClass}">${status}</span></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Created By</th>
+                                            <td>:</td>
+                                            <td>${data.sub_category.created_by.name}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Updated By</th>
+                                            <td>:</td>
+                                            <td>${updated_by}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Created By</th>
+                                            <td>:</td>
+                                            <td>${data.sub_category.created_at}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Created By</th>
+                                            <td>:</td>
+                                            <td>${data.sub_category.updated_at}</td>
+                                        </tr>
+                                    </table>
+                                    `;
+                    $('.modal-body').html(view_data);
+                    $('.modal').modal('show');
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching member data:', error);
+                }
+            });
+        });
+    });
+</script>
 @endpush
