@@ -6,6 +6,7 @@ use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\SubCategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,6 +59,16 @@ Route::middleware(['auth', 'admin'])->group(function () {
             Route::put('update/{id}',[CategoryController::class, 'update'])->name('update');
             Route::get('status/{id}',[CategoryController::class, 'status'])->name('status');
             Route::get('delete/{id}',[CategoryController::class, 'delete'])->name('delete');
+        });
+        Route::group(['as' => 'sub_category.', 'prefix' => 'sub-category'], function () {
+            Route::get('index',[SubCategoryController::class, 'index'])->name('index');
+            Route::get('create',[SubCategoryController::class, 'create'])->name('create');
+            Route::post('store',[SubCategoryController::class, 'store'])->name('store');
+            Route::get('view/{id}',[SubCategoryController::class, 'view'])->name('view');
+            Route::get('edit/{id}',[SubCategoryController::class, 'edit'])->name('edit');
+            Route::put('update/{id}',[SubCategoryController::class, 'update'])->name('update');
+            Route::get('status/{id}',[SubCategoryController::class, 'status'])->name('status');
+            Route::get('delete/{id}',[SubCategoryController::class, 'delete'])->name('delete');
         });
     });
 
